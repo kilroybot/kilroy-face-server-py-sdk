@@ -3,7 +3,7 @@
 
 [tool.poetry]
 name = "kilroy-face-server-py-sdk"
-version = "0.1.0"
+version = "0.2.0"
 description = "SDK for kilroy face servers in Python 🧰"
 readme = "kilroy_face_server_py_sdk/README.md"
 authors = ["kilroy <kilroymail@pm.me>"]
@@ -15,6 +15,9 @@ packages = [{ include = "kilroy-face-server-py-sdk", from = "kilroy_face_server_
 
 [tool.poetry.dependencies]
 python = "^3.9"
+kilroy-ws-server-py-sdk = "^0.4"
+pydantic = "^1.9"
+jsonschema = "^4.7"
 
 # dev
 
