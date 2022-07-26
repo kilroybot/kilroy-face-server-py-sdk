@@ -42,6 +42,7 @@ class BaseFaceModel(BaseModel, ABC):
 
 class PostSchema(BaseFaceModel):
     post_schema: JSONSchema
+    ui_schema: JSON = {}
 
 
 class StatusEnum(str, Enum):
