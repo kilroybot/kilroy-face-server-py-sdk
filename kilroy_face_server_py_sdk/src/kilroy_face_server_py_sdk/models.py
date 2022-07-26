@@ -1,8 +1,10 @@
+from abc import ABC
 from datetime import datetime
 from enum import Enum
 from typing import Optional
 from uuid import UUID
 
+from humps import camelize
 from jsonschema.exceptions import SchemaError
 from jsonschema.validators import Draft202012Validator
 from kilroy_ws_server_py_sdk import JSON
@@ -29,8 +31,17 @@ class JSONSchema(dict):
         return schema
 
 
-class PostSchema(BaseModel):
-    postSchema: JSONSchema
+class BaseFaceModel(BaseModel, ABC):
+    def json(self, *args, by_alias: bool = True, **kwargs) -> str:
+        return super().json(*args, by_alias=by_alias, **kwargs)
+
+    class Config:
+        allow_population_by_field_name = True
+        alias_generator = camelize
+
+
+class PostSchema(BaseFaceModel):
+    post_schema: JSONSchema
 
 
 class StatusEnum(str, Enum):
@@ -38,59 +49,59 @@ class StatusEnum(str, Enum):
     ready = "ready"
 
 
-class Status(BaseModel):
+class Status(BaseFaceModel):
     status: StatusEnum
 
 
-class StatusNotification(BaseModel):
+class StatusNotification(BaseFaceModel):
     old: Status
     new: Status
 
 
-class Config(BaseModel):
+class Config(BaseFaceModel):
     config: JSON
 
 
-class ConfigSchema(BaseModel):
-    configSchema: JSONSchema
+class ConfigSchema(BaseFaceModel):
+    config_schema: JSONSchema
 
 
-class ConfigNotification(BaseModel):
+class ConfigNotification(BaseFaceModel):
     old: Config
     new: Config
 
 
-class ConfigSetRequest(BaseModel):
+class ConfigSetRequest(BaseFaceModel):
     set: Config
 
 
-class ConfigSetReply(BaseModel):
+class ConfigSetReply(BaseFaceModel):
     old: Config
     new: Config
 
 
-class PostRequest(BaseModel):
+class PostRequest(BaseFaceModel):
     post: JSON
 
 
-class PostReply(BaseModel):
-    postId: UUID
+class PostReply(BaseFaceModel):
+    post_id: UUID
 
 
-class ScoreRequest(BaseModel):
-    postId: UUID
+class ScoreRequest(BaseFaceModel):
+    post_id: UUID
 
 
-class ScoreReply(BaseModel):
+class ScoreReply(BaseFaceModel):
     score: float
 
 
-class ScrapRequest(BaseModel):
+class ScrapRequest(BaseFaceModel):
     limit: Optional[int] = None
     before: Optional[datetime] = None
     after: Optional[datetime] = None
 
 
-class ScrapReply(BaseModel):
-    postId: UUID
+class ScrapReply(BaseFaceModel):
+    post_id: UUID
     post: JSON
