@@ -64,7 +64,6 @@ class Config(BaseFaceModel):
 
 class ConfigSchema(BaseFaceModel):
     config_schema: JSONSchema
-    ui_schema: JSON = {}
 
 
 class ConfigNotification(BaseFaceModel):
