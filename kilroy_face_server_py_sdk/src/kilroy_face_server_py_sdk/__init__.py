@@ -1,10 +1,10 @@
+from kilroy_face_server_py_sdk.controller import FaceController
 from kilroy_face_server_py_sdk.resources import (
     resource,
-    resource_text,
     resource_bytes,
+    resource_text,
 )
-
-from kilroy_face_server_py_sdk.models import (
+from kilroy_face_py_shared import (
     JSON,
     JSONSchema,
     PostSchema,
@@ -23,7 +23,4 @@ from kilroy_face_server_py_sdk.models import (
     ScrapRequest,
     ScrapReply,
 )
-
-from kilroy_face_server_py_sdk.controller import FaceController
-
 from kilroy_ws_server_py_sdk import Server
