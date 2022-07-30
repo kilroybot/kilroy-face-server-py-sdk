@@ -103,5 +103,6 @@ class ScrapRequest(BaseFaceModel):
 
 
 class ScrapReply(BaseFaceModel):
+    post_number: int
     post_id: UUID
     post: JSON
