@@ -8,6 +8,7 @@ from typing import (
     TypeVar,
 )
 
+from asyncstdlib import enumerate
 from kilroy_face_py_shared import (
     Config,
     ConfigNotification,
@@ -22,6 +23,7 @@ from kilroy_face_py_shared import (
     ScrapReply,
     ScrapRequest,
     Status,
+    StatusEnum,
     StatusNotification,
 )
 from kilroy_ws_server_py_sdk import (
@@ -34,11 +36,13 @@ from kilroy_ws_server_py_sdk import (
 )
 from pydantic import BaseModel
 
+from kilroy_face_server_py_sdk.face import Face
+
 M = TypeVar("M", bound=BaseModel)
 N = TypeVar("N", bound=BaseModel)
 
 
-class FaceController(Controller, ABC):
+class BaseController(Controller, ABC):
     @staticmethod
     async def _handle_get(fn: Callable[[], Awaitable[M]]) -> JSON:
         payload = await fn()
@@ -178,3 +182,66 @@ class FaceController(Controller, ABC):
         self, request: Awaitable[ScrapRequest]
     ) -> AsyncIterable[ScrapReply]:
         yield
+
+
+class FaceController(BaseController):
+    def __init__(self, face: Face) -> None:
+        super().__init__()
+        self._face = face
+
+    async def post_schema(self) -> PostSchema:
+        return PostSchema(post_schema=self._face.post_schema)
+
+    async def status(self) -> Status:
+        ready = self._face.loadable.ready
+        return Status(status=StatusEnum.ready if ready else StatusEnum.loading)
+
+    async def watch_status(self) -> AsyncIterable[StatusNotification]:
+        old = await self.status()
+        async for ready in self._face.loadable.watch():
+            new = Status(
+                status=StatusEnum.ready if ready else StatusEnum.loading
+            )
+            yield StatusNotification(old=old, new=new)
+            old = new
+
+    async def config(self) -> Config:
+        return Config(config=await self._face.config.get())
+
+    async def config_schema(self) -> ConfigSchema:
+        return ConfigSchema(
+            config_schema=await self._face.config.get_full_schema()
+        )
+
+    async def watch_config(self) -> AsyncIterable[ConfigNotification]:
+        old = await self.config()
+        async for config in self._face.config.watch():
+            new = Config(config=config)
+            yield ConfigNotification(old=old, new=new)
+            old = new
+
+    async def set_config(
+        self, request: Awaitable[ConfigSetRequest]
+    ) -> ConfigSetReply:
+        old = await self.config()
+        config = await self._face.config.set((await request).set.config)
+        new = Config(config=config)
+        return ConfigSetReply(old=old, new=new)
+
+    async def post(self, request: Awaitable[PostRequest]) -> PostReply:
+        post = (await request).post
+        post_id = await self._face.post(post)
+        return PostReply(post_id=post_id)
+
+    async def score(self, request: Awaitable[ScoreRequest]) -> ScoreReply:
+        post_id = (await request).post_id
+        score = await self._face.score(post_id)
+        return ScoreReply(score=score)
+
+    async def scrap(
+        self, request: Awaitable[ScrapRequest]
+    ) -> AsyncIterable[ScrapReply]:
+        request = await request
+        posts = self._face.scrap(request.limit, request.before, request.after)
+        async for number, (post_id, post) in enumerate(posts):
+            yield ScrapReply(post_number=number, post_id=post_id, post=post)
