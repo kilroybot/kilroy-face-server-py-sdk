@@ -172,7 +172,7 @@ class Configuration(Generic[StateType]):
     async def get_properties_schema(self) -> JSON:
         params = await self._get_parameters_mapping(self._state.state)
         return {
-            name: parameter.schema(self._state.state)
+            name: await parameter.schema(self._state.state)
             for name, parameter in params.items()
         }
 
