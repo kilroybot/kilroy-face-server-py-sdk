@@ -1,21 +1,27 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import AsyncIterable, Generic, Optional, Tuple
+from typing import Any, AsyncIterable, Dict, Generic, Optional, Tuple, TypeVar
 from uuid import UUID
 
-from kilroy_face_py_shared import JSON, JSONSchema
-from kilroy_face_server_py_sdk.types import StateType
-from kilroy_face_server_py_sdk.utils import ConfigurableWithLoadableState
+from kilroy_face_py_shared import Metadata
+from kilroy_server_py_utils import Configurable, JSONSchema
+
+StateType = TypeVar("StateType")
 
 
-class Face(ConfigurableWithLoadableState[StateType], Generic[StateType], ABC):
+class Face(Configurable[StateType], Generic[StateType], ABC):
+    @property
+    @abstractmethod
+    def metadata(self) -> Metadata:
+        pass
+
     @property
     @abstractmethod
     def post_schema(self) -> JSONSchema:
         pass
 
     @abstractmethod
-    async def post(self, post: JSON) -> UUID:
+    async def post(self, post: Dict[str, Any]) -> UUID:
         pass
 
     @abstractmethod
@@ -28,5 +34,5 @@ class Face(ConfigurableWithLoadableState[StateType], Generic[StateType], ABC):
         limit: Optional[int] = None,
         before: Optional[datetime] = None,
         after: Optional[datetime] = None,
-    ) -> AsyncIterable[Tuple[UUID, JSON]]:
+    ) -> AsyncIterable[Tuple[UUID, Dict[str, Any]]]:
         pass
