@@ -327,9 +327,13 @@ class FaceService(FaceServiceBase):
     async def scrap(
         self, scrap_request: "ScrapRequest"
     ) -> AsyncIterator["ScrapResponse"]:
-        async for uid, post in self._face.scrap(
+        async for uid, post, score in self._face.scrap(
             scrap_request.limit, scrap_request.before, scrap_request.after
         ):
             yield ScrapResponse(
-                post=RealPost(id=str(uid), content=json.dumps(post))
+                post=RealPost(
+                    id=str(uid),
+                    content=json.dumps(post),
+                    score=score,
+                ),
             )

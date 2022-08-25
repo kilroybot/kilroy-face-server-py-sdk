@@ -34,5 +34,5 @@ class Face(Configurable[StateType], Generic[StateType], ABC):
         limit: Optional[int] = None,
         before: Optional[datetime] = None,
         after: Optional[datetime] = None,
-    ) -> AsyncIterable[Tuple[UUID, Dict[str, Any]]]:
+    ) -> AsyncIterable[Tuple[UUID, Dict[str, Any], float]]:
         pass
