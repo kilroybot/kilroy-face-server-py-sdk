@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kilroy-face-server-py-sdk"
-version = "0.6.0"
+version = "0.7.0"
 description = "SDK for kilroy face servers in Python 🧰"
 readme = "README.md"
 authors = ["kilroy <kilroymail@pm.me>"]
@@ -12,7 +12,7 @@ documentation = "https://kilroybot.github.io/kilroy-face-server-py-sdk"
 [tool.poetry.dependencies]
 python = "^3.9"
 kilroy-server-py-utils = "~0.1"
-kilroy-face-py-shared = "~0.3"
+kilroy-face-py-shared = "~0.4"
 
 # dev
 

@@ -15,10 +15,10 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-tests_no_zope = ["cloudpickle", "pytest-mypy-plugins", "mypy (>=0.900,!=0.940)", "pytest (>=4.3.0)", "pympler", "hypothesis", "coverage[toml] (>=5.0.2)"]
-tests = ["cloudpickle", "zope.interface", "pytest-mypy-plugins", "mypy (>=0.900,!=0.940)", "pytest (>=4.3.0)", "pympler", "hypothesis", "coverage[toml] (>=5.0.2)"]
-docs = ["sphinx-notfound-page", "zope.interface", "sphinx", "furo"]
-dev = ["cloudpickle", "pre-commit", "sphinx-notfound-page", "sphinx", "furo", "zope.interface", "pytest-mypy-plugins", "mypy (>=0.900,!=0.940)", "pytest (>=4.3.0)", "pympler", "hypothesis", "coverage[toml] (>=5.0.2)"]
+dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit", "cloudpickle"]
+docs = ["furo", "sphinx", "zope.interface", "sphinx-notfound-page"]
+tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "zope.interface", "cloudpickle"]
+tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "mypy (>=0.900,!=0.940)", "pytest-mypy-plugins", "cloudpickle"]
 
 [[package]]
 name = "betterproto"
@@ -33,7 +33,7 @@ grpclib = ">=0.4.1,<0.5.0"
 python-dateutil = ">=2.8,<3.0"
 
 [package.extras]
-compiler = ["isort (>=5.10.1,<6.0.0)", "jinja2 (>=3.0.3)", "black (>=19.3b0)"]
+compiler = ["black (>=19.3b0)", "jinja2 (>=3.0.3)", "isort (>=5.10.1,<6.0.0)"]
 
 [[package]]
 name = "colorama"
@@ -104,7 +104,7 @@ python-versions = "*"
 
 [[package]]
 name = "jsonschema"
-version = "4.12.1"
+version = "4.14.0"
 description = "An implementation of JSON Schema validation for Python"
 category = "main"
 optional = false
@@ -120,7 +120,7 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "kilroy-face-py-shared"
-version = "0.3.0"
+version = "0.4.0"
 description = "shared code for kilroy face SDKs in Python 🤝"
 category = "main"
 optional = false
@@ -138,7 +138,7 @@ test = ["pytest (>=7.0,<8.0)"]
 
 [[package]]
 name = "kilroy-server-py-utils"
-version = "0.1.1"
+version = "0.1.4"
 description = "utilities for kilroy servers 🔧"
 category = "main"
 optional = false
@@ -205,8 +205,8 @@ python-versions = ">=3.6.1"
 typing-extensions = ">=3.7.4.3"
 
 [package.extras]
-email = ["email-validator (>=1.0.3)"]
 dotenv = ["python-dotenv (>=0.10.4)"]
+email = ["email-validator (>=1.0.3)"]
 
 [[package]]
 name = "pyhumps"
@@ -225,7 +225,7 @@ optional = true
 python-versions = ">=3.6.8"
 
 [package.extras]
-diagrams = ["jinja2", "railroad-diagrams"]
+diagrams = ["railroad-diagrams", "jinja2"]
 
 [[package]]
 name = "pyrsistent"
@@ -254,7 +254,7 @@ py = ">=1.8.2"
 tomli = ">=1.0.0"
 
 [package.extras]
-testing = ["xmlschema", "requests", "pygments (>=2.7.2)", "nose", "mock", "hypothesis (>=3.56)", "argcomplete"]
+testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "xmlschema"]
 
 [[package]]
 name = "python-dateutil"
@@ -298,7 +298,7 @@ test = ["pytest"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "8d8a52f5a28ffc7edd34483eab1238bc437cd4de6d66a3202fe3f92ea9072011"
+content-hash = "14de79c82c1fc661fd86ce58c8f09c6186c1d26a0a66d1ce317e355d69ec85d0"
 
 [metadata.files]
 atomicwrites = [
@@ -340,16 +340,16 @@ iniconfig = [
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
 jsonschema = [
-    {file = "jsonschema-4.12.1-py3-none-any.whl", hash = "sha256:05f975aee3f1244a1ea0e018e8ad2672f6ca5fd1a28bc46ffc7d4b3e9896cac4"},
-    {file = "jsonschema-4.12.1.tar.gz", hash = "sha256:c7dd96a88c4ea60bdc8478589ee2d4ea5d73ab235e24d17641ad733dde4e3eb1"},
+    {file = "jsonschema-4.14.0-py3-none-any.whl", hash = "sha256:9892b8d630a82990521a9ca630d3446bd316b5ad54dbe981338802787f3e0d2d"},
+    {file = "jsonschema-4.14.0.tar.gz", hash = "sha256:15062f4cc6f591400cd528d2c355f2cfa6a57e44c820dc783aee5e23d36a831f"},
 ]
 kilroy-face-py-shared = [
-    {file = "kilroy-face-py-shared-0.3.0.tar.gz", hash = "sha256:11a235d77c698cf03347b0de6f30f5dcada36f71d2af318620ab4c2dd63c0593"},
-    {file = "kilroy_face_py_shared-0.3.0-py3-none-any.whl", hash = "sha256:db39dfc6b2d27bd497df56761a3c98c0d01f6fba056435d372c65b580be8d9fd"},
+    {file = "kilroy-face-py-shared-0.4.0.tar.gz", hash = "sha256:4ce5f46155351b531bce08a3c5db1a99c6035b3874a30a85f0367affdd559b87"},
+    {file = "kilroy_face_py_shared-0.4.0-py3-none-any.whl", hash = "sha256:d4d4cd51d3bb3cd8a854a76ac05dd5600b824755671ce6c68d73acac2e8dc08b"},
 ]
 kilroy-server-py-utils = [
-    {file = "kilroy-server-py-utils-0.1.1.tar.gz", hash = "sha256:535acb61ce5808de2550c5ba0186eda13f0e7353869a92445846ee7d038d5ecd"},
-    {file = "kilroy_server_py_utils-0.1.1-py3-none-any.whl", hash = "sha256:a4c896fc08b05fb40d47e8dbdad3e287495c194b71b7a7aa389d6d969674f2a5"},
+    {file = "kilroy-server-py-utils-0.1.4.tar.gz", hash = "sha256:7cc25861b71cfb1c4ff5fd9cdd17abb9e0b5022335429350655c130bd70803b3"},
+    {file = "kilroy_server_py_utils-0.1.4-py3-none-any.whl", hash = "sha256:fd7bf44177b269aa9a9b54209767ee523804f568c5fc11488bfa0dda300ae60e"},
 ]
 multidict = [
     {file = "multidict-6.0.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:0b9e95a740109c6047602f4db4da9949e6c5945cefbad34a1299775ddc9a62e2"},
