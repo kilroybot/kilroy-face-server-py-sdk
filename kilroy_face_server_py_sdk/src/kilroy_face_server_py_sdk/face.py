@@ -4,20 +4,20 @@ from typing import Any, AsyncIterable, Dict, Generic, Optional, Tuple, TypeVar
 from uuid import UUID
 
 from kilroy_face_py_shared import Metadata
-from kilroy_server_py_utils import Configurable, JSONSchema
+from kilroy_server_py_utils import Configurable, JSONSchema, classproperty
 
 StateType = TypeVar("StateType")
 
 
 class Face(Configurable[StateType], Generic[StateType], ABC):
-    @property
+    @classproperty
     @abstractmethod
-    def metadata(self) -> Metadata:
+    def metadata(cls) -> Metadata:
         pass
 
-    @property
+    @classproperty
     @abstractmethod
-    def post_schema(self) -> JSONSchema:
+    def post_schema(cls) -> JSONSchema:
         pass
 
     @abstractmethod
