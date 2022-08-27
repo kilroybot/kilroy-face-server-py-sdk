@@ -9,7 +9,7 @@ from kilroy_server_py_utils import Configurable, JSONSchema, classproperty
 StateType = TypeVar("StateType")
 
 
-class Face(Configurable[StateType], Generic[StateType], ABC):
+class Face(Configurable[StateType], ABC, Generic[StateType]):
     @classproperty
     @abstractmethod
     def metadata(cls) -> Metadata:
