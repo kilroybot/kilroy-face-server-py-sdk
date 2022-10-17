@@ -19,6 +19,8 @@ from kilroy_face_py_shared import (
     PostRequest,
     PostResponse,
     RealPost,
+    ResetRequest,
+    ResetResponse,
     ScoreRequest,
     ScoreResponse,
     ScrapRequest,
@@ -85,6 +87,9 @@ class FaceServiceBase(ServiceBase):
     async def scrap(
         self, scrap_request: "ScrapRequest"
     ) -> AsyncIterator["ScrapResponse"]:
+        raise grpclib.GRPCError(grpclib.const.Status.UNIMPLEMENTED)
+
+    async def reset(self, reset_request: "ResetRequest") -> "ResetResponse":
         raise grpclib.GRPCError(grpclib.const.Status.UNIMPLEMENTED)
 
     async def __rpc_get_metadata(
@@ -181,6 +186,13 @@ class FaceServiceBase(ServiceBase):
             request,
         )
 
+    async def __rpc_reset(
+        self, stream: "grpclib.server.Stream[ResetRequest, ResetResponse]"
+    ) -> None:
+        request = await stream.recv_message()
+        response = await self.reset(request)
+        await stream.send_message(response)
+
     def __mapping__(self) -> Dict[str, grpclib.const.Handler]:
         return {
             "/kilroy.face.v1alpha.FaceService/GetMetadata": grpclib.const.Handler(
@@ -248,6 +260,12 @@ class FaceServiceBase(ServiceBase):
                 grpclib.const.Cardinality.UNARY_STREAM,
                 ScrapRequest,
                 ScrapResponse,
+            ),
+            "/kilroy.face.v1alpha.FaceService/Reset": grpclib.const.Handler(
+                self.__rpc_reset,
+                grpclib.const.Cardinality.UNARY_UNARY,
+                ResetRequest,
+                ResetResponse,
             ),
         }
 
@@ -337,3 +355,7 @@ class FaceService(FaceServiceBase):
                     score=score,
                 ),
             )
+
+    async def reset(self, reset_request: "ResetRequest") -> "ResetResponse":
+        await self._face.init()
+        return ResetResponse()
