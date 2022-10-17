@@ -335,8 +335,8 @@ class FaceService(FaceServiceBase):
 
     async def post(self, post_request: "PostRequest") -> "PostResponse":
         post = json.loads(post_request.post.content)
-        uid = await self._face.post(post)
-        return PostResponse().from_dict({"post_id": str(uid)})
+        uid, url = await self._face.post(post)
+        return PostResponse().from_dict({"post_id": str(uid), "post_url": url})
 
     async def score(self, score_request: "ScoreRequest") -> "ScoreResponse":
         score = await self._face.score(UUID(score_request.post_id))
