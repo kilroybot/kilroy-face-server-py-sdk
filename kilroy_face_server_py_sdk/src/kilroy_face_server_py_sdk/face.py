@@ -21,7 +21,7 @@ class Face(Configurable[StateType], ABC, Generic[StateType]):
         pass
 
     @abstractmethod
-    async def post(self, post: Dict[str, Any]) -> UUID:
+    async def post(self, post: Dict[str, Any]) -> Tuple[UUID, Optional[str]]:
         pass
 
     @abstractmethod
