@@ -3,17 +3,16 @@ import logging
 from grpclib.events import RecvRequest
 from grpclib.server import Server
 
-from kilroy_face_server_py_sdk import Face
 from kilroy_face_server_py_sdk.service import FaceService
 
 
 class FaceServer:
     def __init__(
         self,
-        face: Face,
+        service: FaceService,
         logger: logging.Logger = logging.getLogger(__name__),
     ) -> None:
-        self._service = FaceService(face)
+        self._service = service
         self._logger = logger
 
     async def _on_request(self, event: RecvRequest) -> None:

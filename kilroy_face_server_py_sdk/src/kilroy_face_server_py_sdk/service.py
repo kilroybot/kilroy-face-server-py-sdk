@@ -1,10 +1,12 @@
 import json
+from pathlib import Path
 from typing import AsyncIterator, Dict
 from uuid import UUID
 
 import grpclib
 from betterproto.grpc.grpclib_server import ServiceBase
 from grpclib import server
+
 from kilroy_face_py_shared import (
     GetConfigRequest,
     GetConfigResponse,
@@ -18,7 +20,6 @@ from kilroy_face_py_shared import (
     GetStatusResponse,
     PostRequest,
     PostResponse,
-    RealPost,
     ResetRequest,
     ResetResponse,
     ScoreRequest,
@@ -32,8 +33,9 @@ from kilroy_face_py_shared import (
     WatchConfigResponse,
     WatchStatusRequest,
     WatchStatusResponse,
+    SaveRequest,
+    SaveResponse,
 )
-
 from kilroy_face_server_py_sdk import Face
 
 
@@ -92,9 +94,12 @@ class FaceServiceBase(ServiceBase):
     async def reset(self, reset_request: "ResetRequest") -> "ResetResponse":
         raise grpclib.GRPCError(grpclib.const.Status.UNIMPLEMENTED)
 
+    async def save(self, save_request: "SaveRequest") -> "SaveResponse":
+        raise grpclib.GRPCError(grpclib.const.Status.UNIMPLEMENTED)
+
     async def __rpc_get_metadata(
         self,
-        stream: "server.Stream[GetMetadataRequest, GetMetadataResponse]",
+        stream: "grpclib.server.Stream[GetMetadataRequest, GetMetadataResponse]",
     ) -> None:
         request = await stream.recv_message()
         response = await self.get_metadata(request)
@@ -102,7 +107,7 @@ class FaceServiceBase(ServiceBase):
 
     async def __rpc_get_post_schema(
         self,
-        stream: "server.Stream[GetPostSchemaRequest, GetPostSchemaResponse]",
+        stream: "grpclib.server.Stream[GetPostSchemaRequest, GetPostSchemaResponse]",
     ) -> None:
         request = await stream.recv_message()
         response = await self.get_post_schema(request)
@@ -110,7 +115,7 @@ class FaceServiceBase(ServiceBase):
 
     async def __rpc_get_status(
         self,
-        stream: "server.Stream[GetStatusRequest, GetStatusResponse]",
+        stream: "grpclib.server.Stream[GetStatusRequest, GetStatusResponse]",
     ) -> None:
         request = await stream.recv_message()
         response = await self.get_status(request)
@@ -118,7 +123,7 @@ class FaceServiceBase(ServiceBase):
 
     async def __rpc_watch_status(
         self,
-        stream: "server.Stream[WatchStatusRequest, WatchStatusResponse]",
+        stream: "grpclib.server.Stream[WatchStatusRequest, WatchStatusResponse]",
     ) -> None:
         request = await stream.recv_message()
         await self._call_rpc_handler_server_stream(
@@ -129,7 +134,7 @@ class FaceServiceBase(ServiceBase):
 
     async def __rpc_get_config_schema(
         self,
-        stream: "server.Stream[GetConfigSchemaRequest, GetConfigSchemaResponse]",
+        stream: "grpclib.server.Stream[GetConfigSchemaRequest, GetConfigSchemaResponse]",
     ) -> None:
         request = await stream.recv_message()
         response = await self.get_config_schema(request)
@@ -137,7 +142,7 @@ class FaceServiceBase(ServiceBase):
 
     async def __rpc_get_config(
         self,
-        stream: "server.Stream[GetConfigRequest, GetConfigResponse]",
+        stream: "grpclib.server.Stream[GetConfigRequest, GetConfigResponse]",
     ) -> None:
         request = await stream.recv_message()
         response = await self.get_config(request)
@@ -145,7 +150,7 @@ class FaceServiceBase(ServiceBase):
 
     async def __rpc_watch_config(
         self,
-        stream: "server.Stream[WatchConfigRequest, WatchConfigResponse]",
+        stream: "grpclib.server.Stream[WatchConfigRequest, WatchConfigResponse]",
     ) -> None:
         request = await stream.recv_message()
         await self._call_rpc_handler_server_stream(
@@ -156,28 +161,28 @@ class FaceServiceBase(ServiceBase):
 
     async def __rpc_set_config(
         self,
-        stream: "server.Stream[SetConfigRequest, SetConfigResponse]",
+        stream: "grpclib.server.Stream[SetConfigRequest, SetConfigResponse]",
     ) -> None:
         request = await stream.recv_message()
         response = await self.set_config(request)
         await stream.send_message(response)
 
     async def __rpc_post(
-        self, stream: "server.Stream[PostRequest, PostResponse]"
+        self, stream: "grpclib.server.Stream[PostRequest, PostResponse]"
     ) -> None:
         request = await stream.recv_message()
         response = await self.post(request)
         await stream.send_message(response)
 
     async def __rpc_score(
-        self, stream: "server.Stream[ScoreRequest, ScoreResponse]"
+        self, stream: "grpclib.server.Stream[ScoreRequest, ScoreResponse]"
     ) -> None:
         request = await stream.recv_message()
         response = await self.score(request)
         await stream.send_message(response)
 
     async def __rpc_scrap(
-        self, stream: "server.Stream[ScrapRequest, ScrapResponse]"
+        self, stream: "grpclib.server.Stream[ScrapRequest, ScrapResponse]"
     ) -> None:
         request = await stream.recv_message()
         await self._call_rpc_handler_server_stream(
@@ -191,6 +196,13 @@ class FaceServiceBase(ServiceBase):
     ) -> None:
         request = await stream.recv_message()
         response = await self.reset(request)
+        await stream.send_message(response)
+
+    async def __rpc_save(
+        self, stream: "grpclib.server.Stream[SaveRequest, SaveResponse]"
+    ) -> None:
+        request = await stream.recv_message()
+        response = await self.save(request)
         await stream.send_message(response)
 
     def __mapping__(self) -> Dict[str, grpclib.const.Handler]:
@@ -267,13 +279,20 @@ class FaceServiceBase(ServiceBase):
                 ResetRequest,
                 ResetResponse,
             ),
+            "/kilroy.face.v1alpha.FaceService/Save": grpclib.const.Handler(
+                self.__rpc_save,
+                grpclib.const.Cardinality.UNARY_UNARY,
+                SaveRequest,
+                SaveResponse,
+            ),
         }
 
 
 class FaceService(FaceServiceBase):
-    def __init__(self, face: Face) -> None:
+    def __init__(self, face: Face, state_directory: Path) -> None:
         super().__init__()
         self._face = face
+        self._state_directory = state_directory
 
     async def get_metadata(
         self, get_metadata_request: "GetMetadataRequest"
@@ -334,28 +353,30 @@ class FaceService(FaceServiceBase):
         return SetConfigResponse().from_dict({"config": json.dumps(config)})
 
     async def post(self, post_request: "PostRequest") -> "PostResponse":
-        post = json.loads(post_request.post.content)
-        uid, url = await self._face.post(post)
-        return PostResponse().from_dict({"post_id": str(uid), "post_url": url})
+        content = json.loads(post_request.content)
+        uid, url = await self._face.post(content)
+        return PostResponse().from_dict({"id": str(uid), "url": url})
 
     async def score(self, score_request: "ScoreRequest") -> "ScoreResponse":
-        score = await self._face.score(UUID(score_request.post_id))
+        score = await self._face.score(UUID(score_request.id))
         return ScoreResponse().from_dict({"score": score})
 
     async def scrap(
         self, scrap_request: "ScrapRequest"
     ) -> AsyncIterator["ScrapResponse"]:
-        async for uid, post, score in self._face.scrap(
+        async for uid, content, score in self._face.scrap(
             scrap_request.limit, scrap_request.before, scrap_request.after
         ):
             yield ScrapResponse(
-                post=RealPost(
-                    id=str(uid),
-                    content=json.dumps(post),
-                    score=score,
-                ),
+                id=str(uid),
+                content=json.dumps(content),
+                score=score,
             )
 
     async def reset(self, reset_request: "ResetRequest") -> "ResetResponse":
-        await self._face.init()
+        await self._face.reset_self()
         return ResetResponse()
+
+    async def save(self, save_request: "SaveRequest") -> "SaveResponse":
+        await self._face.save_self(self._state_directory)
+        return SaveResponse()
