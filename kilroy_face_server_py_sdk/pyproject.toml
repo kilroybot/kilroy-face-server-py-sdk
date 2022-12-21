@@ -11,8 +11,8 @@ documentation = "https://kilroybot.github.io/kilroy-face-server-py-sdk"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-kilroy-server-py-utils = "~0.3"
-kilroy-face-py-shared = "~0.5"
+kilroy-server-py-utils = "~0.4"
+kilroy-face-py-shared = "~0.6"
 
 [tool.poetry.group.poe.dependencies]
 poethepoet = "^0.16"
